@@ -5,15 +5,14 @@ from flask import Flask, request, render_template
 import PyPDF2
 from flask_sqlalchemy import SQLAlchemy
 
-
 nlp = spacy.load("en_core_web_sm")
 
-openai.api_key = "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"
+openai.api_key = "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"
 
 # List of keywords related to Indian constitutional law
 keywords = ["constitution", "law", "india", "article", "amendment", "supreme court", "parliament", "legislation"]
 
-app = Flask(__name__)
+app = Flask(_name_)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
 
@@ -25,14 +24,29 @@ class Message(db.Model):
 
 
 def extract_text_from_pdf(pdf_path):
-    pdf_file_obj = open(pdf_path, 'rb')
-    pdf_reader = PyPDF2.PdfFileReader(pdf_file_obj)
-    text = ''
-    for page_num in range(pdf_reader.numPages):
-        page_obj = pdf_reader.getPage(page_num)
-        text += page_obj.extractText()
-    pdf_file_obj.close()
+    text = "C:\\Users\\Harish\\OneDrive\\Documents\\S.pdf"
+    with open(pdf_path, 'rb') as pdf_file:
+        pdf_reader = PyPDF2.PdfReader(pdf_file)
+        for page in pdf_reader.pages:
+            text += page.extract_text()
     return text
+
+
+def is_related_to_pdf(question, pdf_text):
+    # Define keywords or phrases related to the content of the PDF
+    pdf_keywords = ["constitution", "law", "amendment", "supreme court", "parliament"]
+
+    # Convert question and PDF text to lowercase for case-insensitive matching
+    question = question.lower()
+    pdf_text = pdf_text.lower()
+
+    # Check if any of the keywords are present in the question or PDF text
+    for keyword in pdf_keywords:
+        if re.search(r'\b{}\b'.format(re.escape(keyword)), question) or re.search(r'\b{}\b'.format(re.escape(keyword)),
+                                                                                  pdf_text):
+            return True
+
+    return False
 
 
 def is_legal_problem(question):
@@ -60,21 +74,27 @@ def postprocess_response(response):
     # Remove unnecessary characters, format response, etc.
     processed_response = response.strip()
     # Define key phrases that indicate a new point
-    key_phrases = ['Right to Privacy:', 'Right to live with dignity:', 'Right to speedy trial:', 'Right against custodial violence:', 'Right to fair trial:']
+    key_phrases = ['Right to Privacy:', 'Right to live with dignity:', 'Right to speedy trial:',
+                   'Right against custodial violence:', 'Right to fair trial:']
     # Split the response into points based on the key phrases
     points = re.split('|'.join(map(re.escape, key_phrases)), processed_response)
     # Remove any empty strings from the list
     points = [point for point in points if point]
     # Format each point as a list item with new numbering
-    list_response = '\n'.join([f'{i+1}. {point}' for i, point in enumerate(points)])
+    list_response = '\n'.join([f'{i + 1}. {point}' for i, point in enumerate(points)])
     return list_response
 
 
+def ask_gpt3(question, context, conversation_history, pdf_text=None):
+    if is_math_problem(question):
+        return "I'm sorry, but I can only assist with law related questions."
 
+    # Include the extracted PDF text in the prompt if available
+    if pdf_text:
+        prompt = f"{context}\n{pdf_text}\n{conversation_history}\n{question}"
+    else:
+        prompt = f"{context}\n{conversation_history}\n{question}"
 
-def ask_gpt3(question, data, conversation_hidtory):
-    preprocessed_data = preprocess_data(data)
-    prompt = create_prompt(question, preprocessed_data, conversation_hidtory)
     response = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -87,7 +107,11 @@ def ask_gpt3(question, data, conversation_hidtory):
     return processed_response
 
 
-context = "You are a knowledgeable assistant that specializes in Indian constitutional law."
+context = ("You are a knowledgeable assistant that specializes in Indian constitutional law. Your task is to provide "
+           "detailed information and answer questions strictly related to Indian law. Please refrain from discussing "
+           "other topics.assume that you dont know anything rather than about indian constituional law that mean your "
+           "dataset is only prepare for indian constituional law.")
+
 app.secret_key = 'your secret key'  # Replace with your own secret key
 
 
@@ -95,8 +119,9 @@ app.secret_key = 'your secret key'  # Replace with your own secret key
 def home():
     if request.method == 'POST':
         question = request.form.get('question')
+        pdf_text = extract_text_from_pdf("C:\\Users\\Harish\\OneDrive\\Documents\\S.pdf")
         conversation_history = "\n".join([msg.content for msg in Message.query.all()])
-        response = ask_gpt3(question, context, conversation_history)
+        response = ask_gpt3(question, pdf_text, context, conversation_history)
         db.session.add(Message(role="user", content=question))
         db.session.add(Message(role="bot", content=response))
         db.session.commit()
@@ -106,7 +131,8 @@ def home():
     messages = Message.query.all()
     return render_template('home.html', messages=messages)
 
-if __name__ == '__main__':
+
+if _name_ == '_main_':
     with app.app_context():
         db.create_all()
-    app.run(debug=True,host="0.0.0.0", port=8080)
+    app.run(debug=True)
