@@ -14,20 +14,19 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            background-image: url("https://img.freepik.com/free-photo/abstract-textured-backgound_1258-30585.jpg?size=626&ext=jpg&ga=GA1.1.149309260.1708338338&semt=ais");
+            background-image: url("https://img.freepik.com/free-photo/photorealistic-lawyer-environment_23-2151151878.jpg?size=626&ext=jpg&ga=GA1.1.1493300697.1708545344&semt=sph");
             background-size: cover;
         }
-        /* ... */
-       h1 {
-        background: linear-gradient(to bottom, #33ccff 0%, #ff99cc 100%);
-        -webkit-background-clip: text;
-        padding: 20px;
-    border-radius: 10px;
-    display: inline-block;
 
-    }
+        h1 {
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%);
+            -webkit-background-clip: text;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            color: transparent; /* Set text color to transparent */
+        }
 
-        /* ... */
         .container {
             flex: 1;
             display: flex;
@@ -40,7 +39,7 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            background-color: #fff;
+            background-color: rgba(255, 255, 255, 0.8); /* Transparent white background */
             display: flex;
             flex-direction: column;
         }
@@ -77,20 +76,42 @@
 
         /* Style and animate the title */
         h1 {
-            background-color: white;
-            padding: 10px;
-            border-radius: 5px;
-            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            color: transparent; /* Set text color to transparent */
         }
 
         /* Style the buttons */
         button {
             border: none;
             background: none;
-            color: #007BFF;
             cursor: pointer;
             font-size: 1.2em;
         }
+
+        /* Style the send button */
+        .send-button {
+            color: white;
+            font-size: 1.2em;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Style the box around the send icon */
+        .send-button-box {
+            background-color: rgba(0, 0, 255, 0.5); /* Transparent blue */
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        /* Enlarge the send icon on hover or click */
+        .send-button:hover,
+        .send-button:active {
+            transform: scale(1.1);
+        }
+
     .typing-indicator {
             display: inline-block;
             position: relative;
@@ -123,30 +144,7 @@
             0%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-10px); }
         }
-    </style>
-    <script>
-        function copyToClipboard(elementId) {
-            var aux = document.createElement("input");
-            aux.setAttribute("value", document.getElementById(elementId).innerText);
-            document.body.appendChild(aux);
-            aux.select();
-            document.execCommand("copy");
-            document.body.removeChild(aux);
-        }
-
-        function updateScroll(){
-            var chatContainer = document.getElementById("chatbox");
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function showTypingIndicator() {
-            document.getElementById("typing").style.display = "inline-block";
-        }
-
-        function hideTypingIndicator() {
-            document.getElementById("typing").style.display = "none";
-        }
-    </script>
+</style>
 </head>
 <body onload="updateScroll()">
     <div class="container">
@@ -179,7 +177,9 @@
             <div class="input-group">
                 <input type="text" name="question" class="form-control" placeholder="Ask something...">
                 <div class="input-group-append">
-                    <button type="submit" class="btn btn-primary"><i class="fa fa-paper-plane-o"></i></button>
+                    <div class="send-button-box">
+                        <button type="submit" class="send-button"><i class="fas fa-paper-plane"></i></button>
+                    </div>
                 </div>
             </div>
         </form>
