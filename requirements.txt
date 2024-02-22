@@ -1,0 +1,6 @@
+openai
+regex
+spacy
+flask
+PyPDF2
+Flask-SQLAlchemy
