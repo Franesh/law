@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>LawBot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
@@ -14,8 +15,8 @@
             margin: 0;
             display: flex;
             flex-direction: column;
-            background-image: url("https://img.freepik.com/free-photo/photorealistic-lawyer-environment_23-2151151878.jpg?size=626&ext=jpg&ga=GA1.1.1493300697.1708545344&semt=sph");
             background-size: cover;
+            background-image: url("https://img.freepik.com/free-photo/photorealistic-lawyer-environment_23-2151151878.jpg?size=626&ext=jpg&ga=GA1.1.1493300697.1708545344&semt=sph");
         }
 
         h1 {
@@ -25,6 +26,7 @@
             border-radius: 10px;
             display: inline-block;
             color: transparent; /* Set text color to transparent */
+            font-family: 'Fira Sans', sans-serif; /* Use Fira Sans font for the "LawBot" text */
         }
 
         .container {
@@ -34,7 +36,7 @@
         }
 
         .chat-container {
-            height: 500px; /* Adjust this value as needed */
+            flex: 1;
             overflow-y: auto;
             padding: 20px;
             border-radius: 10px;
@@ -97,22 +99,32 @@
             background: none;
             border: none;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Style the box around the send icon */
         .send-button-box {
             background-color: rgba(0, 0, 255, 0.5); /* Transparent blue */
-            border-radius: 10px;
-            padding: 5px;
+            width: 40px; /* Adjust width to make the box square */
+            height: 40px; /* Adjust height to make the box square */
+            border-radius: 10%; /* Adjust border radius to make the box square */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         /* Enlarge the send icon on hover or click */
-        .send-button:hover,
-        .send-button:active {
+        .send-button:hover .send-button-box {
             transform: scale(1.1);
         }
 
-    .typing-indicator {
+        .send-button i {
+            transition: transform 0.3s ease;
+        }
+
+        .typing-indicator {
             display: inline-block;
             position: relative;
             width: 20px;
@@ -144,11 +156,17 @@
             0%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-10px); }
         }
-</style>
+
+        @media only screen and (max-width: 768px) {
+            .chat-container {
+                height: 300px; /* Adjust height for mobile */
+            }
+        }
+    </style>
 </head>
 <body onload="updateScroll()">
     <div class="container">
-        <h1 class="text-center my-3"><i class="fas fa-gavel"></i> LAWBOT <i class="fas fa-gavel"></i></h1>
+        <h1 class="text-center my-3"><i class="fas fa-gavel"></i> LawBot <i class="fas fa-gavel"></i></h1>
         <div id="chatbox" class="chat-container">
             {% for message in messages %}
                 <div class="chat-message {{ message.role }}-message">
@@ -177,8 +195,8 @@
             <div class="input-group">
                 <input type="text" name="question" class="form-control" placeholder="Ask something...">
                 <div class="input-group-append">
-                    <div class="send-button-box">
-                        <button type="submit" class="send-button"><i class="fas fa-paper-plane"></i></button>
+                    <div class="send-button">
+                        <div class="send-button-box"><i class="fas fa-paper-plane"></i></div>
                     </div>
                 </div>
             </div>
