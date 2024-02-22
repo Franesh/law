@@ -7,12 +7,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 nlp = spacy.load("en_core_web_sm")
 
-openai.api_key = "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"
+openai.api_key = "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"
 
 # List of keywords related to Indian constitutional law
 keywords = ["constitution", "law", "india", "article", "amendment", "supreme court", "parliament", "legislation"]
 
-app = Flask(_name_)
+app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 db = SQLAlchemy(app)
 
@@ -24,7 +24,7 @@ class Message(db.Model):
 
 
 def extract_text_from_pdf(pdf_path):
-    text = "C:\\Users\\Harish\\OneDrive\\Documents\\S.pdf"
+    text = "C:\\Users\\arshi\\S.pdf"
     with open(pdf_path, 'rb') as pdf_file:
         pdf_reader = PyPDF2.PdfReader(pdf_file)
         for page in pdf_reader.pages:
@@ -119,7 +119,7 @@ app.secret_key = 'your secret key'  # Replace with your own secret key
 def home():
     if request.method == 'POST':
         question = request.form.get('question')
-        pdf_text = extract_text_from_pdf("C:\\Users\\Harish\\OneDrive\\Documents\\S.pdf")
+        pdf_text = extract_text_from_pdf("C:\\Users\\arshi\\S.pdf")
         conversation_history = "\n".join([msg.content for msg in Message.query.all()])
         response = ask_gpt3(question, pdf_text, context, conversation_history)
         db.session.add(Message(role="user", content=question))
@@ -131,8 +131,7 @@ def home():
     messages = Message.query.all()
     return render_template('home.html', messages=messages)
 
-
-if _name_ == '_main_':
+if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+        app.run(host="0.0.0.0", port=8080, debug=True)
