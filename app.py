@@ -5,7 +5,11 @@ from flask import Flask, request, render_template
 import PyPDF2
 from flask_sqlalchemy import SQLAlchemy
 
+
+
 nlp = spacy.load("en_core_web_sm")
+
+openai.api_key="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"
 
 
 # List of keywords related to Indian constitutional law
