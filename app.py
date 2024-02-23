@@ -7,7 +7,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 nlp = spacy.load("en_core_web_sm")
 
-openai.api_key = "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"
 
 # List of keywords related to Indian constitutional law
 keywords = ["constitution", "law", "india", "article", "amendment", "supreme court", "parliament", "legislation"]
