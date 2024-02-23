@@ -4,6 +4,7 @@ import spacy
 from flask import Flask, request, render_template
 import PyPDF2
 from flask_sqlalchemy import SQLAlchemy
+openai.api_key="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"
 
 nlp = spacy.load("en_core_web_sm")
 
