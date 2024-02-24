@@ -3,30 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>LawBot</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css">
-
     <style>
         body, html {
             height: 100%;
             margin: 0;
             display: flex;
             flex-direction: column;
-            background-size: cover;
             background-image: url("https://img.freepik.com/free-photo/photorealistic-lawyer-environment_23-2151151878.jpg?size=626&ext=jpg&ga=GA1.1.1493300697.1708545344&semt=sph");
+            background-size: cover;
         }
 
         h1 {
-            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.8) 100%);
+            background: linear-gradient(to bottom, #33ccff 0%, #ff99cc 100%);
             -webkit-background-clip: text;
             padding: 20px;
             border-radius: 10px;
             display: inline-block;
-            color: transparent; /* Set text color to transparent */
-            font-family: 'Fira Sans', sans-serif; /* Use Fira Sans font for the "LawBot" text */
+            color: white;
         }
 
         .container {
@@ -36,12 +32,12 @@
         }
 
         .chat-container {
-            flex: 1;
+            height: 500px;
             overflow-y: auto;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            background-color: rgba(255, 255, 255, 0.8); /* Transparent white background */
+            background-color: rgba(255, 255, 255, 0.8);
             display: flex;
             flex-direction: column;
         }
@@ -59,9 +55,9 @@
         }
 
         .user-message {
-            color: #007BFF;
+            color: #333333;
             font-weight: bold;
-            background-color: #e6f7ff;
+            background-color: #e6f2ff;
         }
 
         .bot-message {
@@ -69,59 +65,9 @@
             background-color: #f2f2f2;
         }
 
-        /* Add a keyframes animation for the title */
-        @keyframes titleAnimation {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* Style and animate the title */
-        h1 {
-            padding: 20px;
-            border-radius: 10px;
-            display: inline-block;
-            color: transparent; /* Set text color to transparent */
-        }
-
-        /* Style the buttons */
-        button {
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 1.2em;
-        }
-
-        /* Style the send button */
-        .send-button {
-            color: white;
-            font-size: 1.2em;
-            background: none;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Style the box around the send icon */
-        .send-button-box {
-            background-color: rgba(0, 0, 255, 0.5); /* Transparent blue */
-            width: 40px; /* Adjust width to make the box square */
-            height: 40px; /* Adjust height to make the box square */
-            border-radius: 10%; /* Adjust border radius to make the box square */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Enlarge the send icon on hover or click */
-        .send-button:hover .send-button-box {
-            transform: scale(1.1);
-        }
-
-        .send-button i {
-            transition: transform 0.3s ease;
+        @keyframes typing-indicator {
+            0%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
         }
 
         .typing-indicator {
@@ -152,55 +98,174 @@
             animation-delay: .4s;
         }
 
-        @keyframes typing-indicator {
-            0%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
+        button {
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 1.2em;
         }
 
-        @media only screen and (max-width: 768px) {
-            .chat-container {
-                height: 300px; /* Adjust height for mobile */
-            }
+        .send-button {
+            color: white;
+            font-size: 1.2em;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .send-button-box {
+            background-color: rgba(0, 0, 255, 0.5);
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .send-button:hover,
+        .send-button:active {
+            transform: scale(1.1);
+        }
+
+        .translate-button {
+            background-color: green;
+            color: white;
+            border-radius: 5px;
+            padding: 5px 10px;
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        .translated-content {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
         }
     </style>
 </head>
 <body onload="updateScroll()">
-    <div class="container">
-        <h1 class="text-center my-3"><i class="fas fa-gavel"></i> LawBot <i class="fas fa-gavel"></i></h1>
-        <div id="chatbox" class="chat-container">
-            {% for message in messages %}
-                <div class="chat-message {{ message.role }}-message">
-                    <strong>{{ message.role.title() }}:</strong>
-                    <ul>
-                        {% for line in message.content.split('\n') %}
-                            {% if line.strip() %}
-                                <li>{{ line }}</li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                    {% if message.role == 'bot' %}
-                        <button onclick="alert('Liked')"><i class="fas fa-thumbs-up"></i></button>
-                        <button onclick="alert('Disliked')"><i class="fas fa-thumbs-down"></i></button>
-                        <button onclick="copyToClipboard('message{{ loop.index }}')"><i class="fa fa-clipboard"></i></button>
-                    {% endif %}
+<div class="container">
+    <h1 class="text-center my-3"><i class="fas fa-gavel"></i> LAWBOT <i class="fas fa-gavel"></i></h1>
+    <div id="chatbox" class="chat-container">
+        {% for message in messages %}
+        <div id="message{{ loop.index }}" class="chat-message {{ message.role }}-message">
+            <strong>{{ message.role.title() }}:</strong>
+            <ul>
+                {% for line in message.content.split('\n') %}
+                {% if line.strip() %}
+                <li>{{ line }}</li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+            {% if message.role == 'bot' %}
+            <button onclick="likeMessage()"><i class="fas fa-thumbs-up"></i></button>
+            <button onclick="dislikeMessage()"><i class="fas fa-thumbs-down"></i></button>
+            <button onclick="copyMessage('message{{ loop.index }}')"><i class="fa fa-clipboard"></i></button>
+            <button onclick="translateMessage({{ message.id }})" class="translate-button">Translate to Tamil</button>
+            <div id="translatedContent{{ message.id }}" class="translated-content" style="display: none;"></div>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <div id="typing" class="typing-indicator" style="display: none;">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+    <form method="POST" class="my-3" onsubmit="showTypingIndicator()">
+        <div class="input-group">
+            <input type="text" name="question" class="form-control" placeholder="Ask something...">
+            <div class="input-group-append">
+                <div class="send-button-box">
+                    <button type="submit" class="send-button"><i class="fas fa-paper-plane"></i></button>
                 </div>
-            {% endfor %}
-            <div id="typing" class="typing-indicator" style="display: none;">
-                <span></span>
-                <span></span>
-                <span></span>
             </div>
         </div>
-        <form method="POST" class="my-3" onsubmit="showTypingIndicator()">
-            <div class="input-group">
-                <input type="text" name="question" class="form-control" placeholder="Ask something...">
-                <div class="input-group-append">
-                    <div class="send-button">
-                        <div class="send-button-box"><i class="fas fa-paper-plane"></i></div>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    function likeMessage() {
+        alert('Liked');
+    }
+
+    function dislikeMessage() {
+        alert('Disliked');
+    }
+
+    function copyMessage(elementId) {
+        var aux = document.createElement("input");
+        aux.setAttribute("value", document.getElementById(elementId).innerText);
+        document.body.appendChild(aux);
+        aux.select();
+        document.execCommand("copy");
+        document.body.removeChild(aux);
+        alert('Message copied to clipboard');
+    }
+
+    function updateScroll() {
+        var chatContainer = document.getElementById("chatbox");
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+        document.getElementById("typing").style.display = "inline-block";
+    }
+
+    function hideTypingIndicator() {
+        document.getElementById("typing").style.display = "none";
+    }
+
+    function translateMessage(messageId) {
+        $.ajax({
+            type: "POST",
+            url: "/translate",
+            data: {message_id: messageId},
+            success: function (response) {
+                console.log("Translation response:", response);
+                var translatedContentId = "translatedContent" + messageId;
+                var translatedContentElement = document.getElementById(translatedContentId);
+                translatedContentElement.innerText = response;
+                translatedContentElement.style.display = "block";
+            },
+            error: function () {
+                alert("Error translating message.");
+            }
+        });
+    }
+    var recognition;
+
+    function startRecording() {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = function() {
+            console.log('Recording started...');
+        };
+
+        recognition.onresult = function(event) {
+            var result = event.results[0][0].transcript;
+            document.querySelector('input[name="question"]').value = result;
+            stopRecording();
+        };
+
+        recognition.onerror = function(event) {
+            console.error('Error occurred in recognition: ' + event.error);
+            stopRecording();
+        };
+
+        recognition.onend = function() {
+            console.log('Recording ended.');
+        };
+
+        recognition.start();
+    }
+
+    function stopRecording() {
+        if (recognition) {
+            recognition.stop();
+        }
+    }
+</script>
 </body>
 </html>
